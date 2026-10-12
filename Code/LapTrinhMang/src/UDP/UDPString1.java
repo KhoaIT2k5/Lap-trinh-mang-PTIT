@@ -13,30 +13,29 @@ public class UDPString1 {
         DatagramPacket dp = new DatagramPacket(buffer,buffer.length);
         socket.receive(dp);
         
-        String receiveString = new String(dp.getData(),0,dp.getLength()).trim();
-        String[] s =  receiveString.trim().split(";");
-        String requestId = s[0].trim(), data = s[1].trim();
-        LinkedHashMap<Character,Integer> map = new LinkedHashMap<>();
+        String s = new String(dp.getData(),0,dp.getLength());
+        String[] a = s.trim().split(";");
+        String requestId = a[0], data = a[1];
+        
+        HashMap<Character,Integer> map = new HashMap<>();
+        int max = Integer.MIN_VALUE;
         for(Character x : data.toCharArray()) map.put(x,map.getOrDefault(x,0)+1);
         
-        StringBuilder res = new StringBuilder();
-        res.append(requestId).append(";");
-        
-        int max = Integer.MIN_VALUE;
+        StringBuilder sb = new StringBuilder();
+        sb.append(requestId).append(";");
+        for(Character x : data.toCharArray()) max = Math.max(map.get(x),max);
         Character charMax = null;
-        for(Character x : data.toCharArray()) if(map.get(x) >= max) max = map.get(x);
         for(int i=0 ; i<data.length() ; i++) {
-            if(map.get(data.charAt(i)) == max) {
+            if(max == map.get(data.charAt(i))) {
                 if(charMax == null) {
                     charMax = data.charAt(i);
-                    res.append(charMax).append(":");
+                    sb.append(charMax).append(":");
                 }
-                if(charMax == data.charAt(i)) res.append(i+1).append(",");
+                if(charMax == data.charAt(i)) sb.append(i+1).append(",");
             }
-        }  
-        
-        byte[] kq = res.toString().getBytes();
-        socket.send(new DatagramPacket(kq,kq.length,address,2208));
+        }
+        byte[] res = sb.toString().trim().getBytes();
+        socket.send(new DatagramPacket(res,res.length,address,2208));
         socket.close();
     }
 }

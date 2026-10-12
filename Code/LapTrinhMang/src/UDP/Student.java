@@ -2,7 +2,7 @@ package UDP;
 import java.io.Serializable;
 
 public class Student implements Serializable {
-    private static final long serialVersionUID = 20171107L; // Đúng giá trị theo đề bài
+    private static final long serialVersionUID = 20171107L; 
 
     private String id;
     private String code;
